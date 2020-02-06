@@ -25,18 +25,18 @@ namespace TicTacToe
             Console.WriteLine("AlgoBot Called");
 
             //int[] move = findBestMove(this.myGame);
-            double[] move = findBestMove(this.myGame);
+            int[] move = findBestMove(this.myGame);
             
             //Console.WriteLine("doing"+"|"+move[1]+"|"+move[2]);
-            myGame.MakeMove((int)move[1], (int)move[2], this.Color);
+            myGame.MakeMove((int)move[0], (int)move[1], this.Color);
         }
         int count;
-        public double[] findBestMove( Game i_game)
+        public int[] findBestMove( Game i_game)
         {
             return findBestMove(i_game, this.Color);
 
         }
-        public double[] findBestMove(Game i_game, bool color)
+        public int[] findBestMove(Game i_game, bool color)
         {
             count = 0;
             List<int[]> possibleMove = PossibleMoves(i_game);
@@ -53,7 +53,8 @@ namespace TicTacToe
             }
             //print(returnAuswahl);
             //Console.WriteLine(count+" positions evaluated");
-            return returnAuswahl[bestEvaluation(returnAuswahl,color)];
+            double[] d = returnAuswahl[bestEvaluation(returnAuswahl, color)];
+            return new int[2] { (int)d[1],(int)d[2] };
 
         }
 

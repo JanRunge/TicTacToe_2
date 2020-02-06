@@ -4,36 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using NeuralNetwork;
 namespace TicTacToe
 {
     class Program
     {
         static void Main(string[] args)
         {
-
+            XoRNetwork x = new XoRNetwork();
+            //x.train(0.01,2000);
             NeuralBot n = new NeuralBot();
-            Console.WriteLine("starting calc");
-            List<NeuralBot.UnpreparedTrainingsset> t = n.getAllPossibleStatesWithRedundancy(null,null,null);
-            Console.WriteLine(t.Count);
-            Console.WriteLine("Ready");
+            n.Color = true;
+            n.myGame = new Game();
+
+            n.Train();
             
 
 
             Console.ReadLine();
-            
+            runGame(n);
+
+
         }
-        static void runGame()
+        static void runGame(Bot b)
         {
-            Game g = new Game();
-            AlgoBot a = new AlgoBot(true, g);
+            Game g = b.myGame;
             while (g.winner == null)
             {
                 g.print();
-                if (g.turn == a.Color)
+                if (g.turn == b.Color)
                 {
                     Thread.Sleep(1000);
-                    a.call();
+                    b.call();
                 }
                 else
                 {
@@ -46,6 +48,13 @@ namespace TicTacToe
 
             }
             Console.WriteLine("Winner is" + g.winner.ToString());
+
+        }
+        static void runGame()
+        {
+            AlgoBot a = new AlgoBot(true);
+            a.myGame = new Game();
+            runGame(a);
 
         }
     }
