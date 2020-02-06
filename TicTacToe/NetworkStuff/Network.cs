@@ -177,30 +177,12 @@ namespace NeuralNetwork
         {
             validateTraingsset();
             int epoch = 0;
-            bool abortflag = false;
             double avgError = 1;
             double errorSum;
-            while (epoch <= maxEpochs && !abortflag)
+            while (epoch <= maxEpochs)
             {
-                double[] absoluteErrors = new double[outputLayer.neurons.Count()];
-                for (int i = 0; i < outputLayer.neurons.Count(); i++)
-                {
-                    absoluteErrors[i] = 0f;
-
-                }
-                    errorSum = 0;
-                epoch++;
-                for (int i = 0; i < this.trainingsset.inputs.Length; i++)  //Loop over every input dataset
-                {
-                    setInputs(this.trainingsset.inputs[i]);
-                    this.fire();
-                    errorSum += this.calculateErrors(this.trainingsset.results[i]);
-                    this.asjustWeights();
-                    double[] betw = outputLayer.getAbsoluteErrors();
-                    absoluteErrors = add(absoluteErrors,betw );
-                }
-                //print(absoluteErrors);
-                print(div(absoluteErrors, this.trainingsset.inputs.Length));
+                errorSum = trainOneEpoch();
+                
                 if (epoch % 250 == 0)
                 {
                     Console.WriteLine("Epoch " + epoch + "current error=" + avgError);
@@ -209,20 +191,63 @@ namespace NeuralNetwork
                 {
                     Console.WriteLine("Epoch " + epoch + "current error=" + avgError + " the error is ingreasing.");
                 }
+                epoch++;
 
                 avgError = errorSum / trainingsset.inputs.Length;
-            }/*
-            if (abortflag)
-            {
-                Console.WriteLine("Training was aborted. Current Error: " + highestError);
-            }else if (epoch >= maxEpochs)
-            {
-                Console.WriteLine("Training finished all Epochs ("+epoch+"). Remaining Error:" + highestError);
-            }else
-            {
-                
-            }*/
+            }
             Console.WriteLine("Epoch " + epoch + " Training ended. Error= " + avgError);
+        }
+        private double trainOneEpoch() {
+            double errorSum = 0;
+            double[] absoluteErrors = new double[outputLayer.neurons.Count()];
+            for (int i = 0; i < outputLayer.neurons.Count(); i++)
+            {
+                absoluteErrors[i] = 0f;
+
+            }
+            errorSum = 0;
+            for (int i = 0; i < this.trainingsset.inputs.Length; i++)  //Loop over every input dataset
+            {
+                setInputs(this.trainingsset.inputs[i]);
+                this.fire();
+                errorSum += this.calculateErrors(this.trainingsset.results[i]);
+                this.asjustWeights();
+                double[] betw = outputLayer.getAbsoluteErrors();
+                absoluteErrors = add(absoluteErrors, betw);
+            }
+            print(div(absoluteErrors, this.trainingsset.inputs.Length));
+            return errorSum;
+
+
+        }
+        public void train(DateTime until)
+        {
+            validateTraingsset();
+            
+            DateTime now = DateTime.Now;
+
+            double avgError = 1;
+            double errorSum;
+            int epoch = 0;
+
+            while (now < until)
+            {
+                trainOneEpoch();
+                errorSum = trainOneEpoch();
+
+                if (epoch % 250 == 0)
+                {
+                    Console.WriteLine("Epoch " + epoch + "current error=" + avgError);
+                }
+                if (avgError < errorSum / trainingsset.inputs.Length)
+                {
+                    Console.WriteLine("Epoch " + epoch + "current error=" + avgError + " the error is ingreasing.");
+                }
+                epoch++;
+                avgError = errorSum / trainingsset.inputs.Length;
+                epoch++;
+            }
+
         }
 
         public void test()

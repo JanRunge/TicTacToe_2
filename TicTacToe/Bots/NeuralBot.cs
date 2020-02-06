@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NeuralNetwork;
+using System.Linq;
+
 namespace TicTacToe
 {
     class NeuralBot:Bot
     {
-        Network Brain = new Network(18, new int[4] {50,30,20,20 }, 9, new Function[] { new tanh(), new tanh(), new tanh(), new tanh(), new Sigmoid() } );
+        public Network Brain = new Network(18, new int[4] {50,30,20,20 }, 9, new Function[] { new tanh(), new tanh(), new tanh(), new tanh(), new Sigmoid() } );
         public void createTestData()
         {
             string path= @"I:\data\trainingTICTACTOE.json";
@@ -43,7 +45,9 @@ namespace TicTacToe
             {
                 createTestData();
             }
-            Brain.train(0.01, 2000);
+            string iString = "2020-07-02 16:00 PM";
+            DateTime oDate = DateTime.ParseExact(iString, "yyyy-MM-dd HH:mm tt", System.Globalization.CultureInfo.InvariantCulture);
+            Brain.train(oDate);
         }
         override public void call()
         {
@@ -120,9 +124,27 @@ namespace TicTacToe
                     }
                 }
             }
-
-
             return result;
+        }
+        public int[] getBestMoveAccordingToTestSet(bool?[,] board, bool turn)
+        {
+            TrainingSet t = this.Brain.trainingsset;
+            double[] input = UnpreparedTrainingsset.boardToNeuronInput(board, turn);
+
+            int i = 0;
+            while (i < t.inputs.Length)
+            {
+                if (input.SequenceEqual(t.inputs[i]))
+                {
+                    return UnpreparedTrainingsset.NeuronOutputToMove(t.results[i]);
+                }
+                i++;
+            }
+            return new int[] { -1, -1 };
+
+
+
+
         }
 
 

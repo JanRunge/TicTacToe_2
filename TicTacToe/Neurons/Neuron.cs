@@ -53,9 +53,9 @@ namespace NeuralNetwork
         {
             foreach (Axon a in this.inputs)
             {
-                a.weight += 0.1*error*a.input.output;
+                a.weight += 0.2*error*a.input.output;
             }
-            bias += 0.1 *error;
+            bias += 0.2 *error;
 
         }
     }
