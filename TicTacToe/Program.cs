@@ -11,18 +11,12 @@ namespace TicTacToe
     {
         static void Main(string[] args)
         {
-            XoRNetwork x = new XoRNetwork();
-            //x.train(0.01,2000);
-            NeuralBot n = new NeuralBot();
-            n.Color = true;
-            n.myGame = new Game();
-            //n.createTestData();//not necessary if we train;
-            n.Train();
-            
 
-
+            NeuralBot b = new NeuralBot();
+            b.Train();
+            b.myGame = new Game();
+            runGame(b);
             Console.ReadLine();
-            runGame(n);
 
 
         }

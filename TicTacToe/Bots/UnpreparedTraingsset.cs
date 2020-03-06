@@ -62,35 +62,32 @@ namespace TicTacToe
         }
         public static double[] boardToNeuronInput(bool?[,] board, bool turn)
         {                                  //00,00,01,01,02,02,10,10,11,11,
-            
+            double boolToDouble(bool b)
+            {
+                if (b)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
 
-            double[] input = new double[18] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            for(int i=0; i<3; i++)
+            double[] input = new double[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            int k = 0;
+            for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    double valOne;
-                    double valTwo;
-                    if (board[i, j] == null)
-                    {
-                        valOne = 0;
-                        valTwo = 0;
-                    }else if (board[i, j] == turn)
-                    {
-                        valOne = 1;
-                        valTwo = 0;
-                    }else
-                    {
-                        valOne = 0;
-                        valTwo = 1;
-                    }
-                    input[i+9 + j]= valOne;
-                    input[i + j]= valTwo;
+                    input[k] = boolToDouble(board[i, j] == turn);
+                    k++;
                 }
             }
 
             return input;
         }
+
 
     }
 }

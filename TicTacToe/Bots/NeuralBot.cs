@@ -5,24 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NeuralNetwork;
-using System.Linq;
 
 namespace TicTacToe
 {
     class NeuralBot:Bot
     {
-        public Network Brain = new Network(18, new int[4] {50,30,20,20 }, 9, new Function[] { new tanh(), new tanh(), new tanh(), new tanh(), new Sigmoid() } );
-        public void createTestData()
+        public Network Brain = new Network(9, new int[4] { 18,26,26,18 }, 9
+                                          , new Function[] { new tanh(), new Sigmoid(), new Sigmoid(), new Sigmoid(), new Sigmoid() });
+
+        //public Network Brain = new Network(18, new int[2] { 10, 10}, 9, new Function[] { new tanh(), new tanh(), new tanh() });
+        public void createOrLoadTesData(string path = @"trainingTICTACTOE.json")
         {
-            string path= @"I:\data\trainingTICTACTOE.json";
+            path= @"trainingTICTACTOE_new2.json";
 
             if (!File.Exists(path))
             {
                 Console.WriteLine("Creating Testdata for Neuralbot");
-                List<UnpreparedTrainingsset> l = getUnpreparedTrainingssets();
-                Console.WriteLine("Raw testdata created. " + l.Count + " sets");
+                
                 Console.WriteLine("converting to Trainingsset Object ...");
-                this.Brain.trainingsset = UnpreparedTrainingsset.toTrainingsset(l);
+                this.Brain.trainingsset = CreateTrainingsSet();
                 Console.Write("Created. ");
                 Console.WriteLine(" Writing to File " + path);
                
@@ -32,22 +33,16 @@ namespace TicTacToe
             {
                 Console.WriteLine("Reading Testdata from file "+path);
                 this.Brain.trainingsset = TrainingSet.getFromFile(path);
-
-
             }
-
             Console.WriteLine("finished");
-
         }
         public void Train()
         {
             if (this.Brain.trainingsset == null)
             {
-                createTestData();
+                createOrLoadTesData();
             }
-            string iString = "2020-07-02 16:00 PM";
-            DateTime oDate = DateTime.ParseExact(iString, "yyyy-MM-dd HH:mm tt", System.Globalization.CultureInfo.InvariantCulture);
-            Brain.train(oDate);
+            Brain.trainWithLogging(600,0.1,1000);
         }
         override public void call()
         {
@@ -76,20 +71,23 @@ namespace TicTacToe
             }
             return b;
         }
-        public List<UnpreparedTrainingsset> getUnpreparedTrainingssets()
+        public TrainingSet CreateTrainingsSet()
         {
             List<UnpreparedTrainingsset> result = new List<UnpreparedTrainingsset>();
             AlgoBot algobot = new AlgoBot();
             Game i_game = new Game();
             i_game.turn = false;
-            List<String>  lstr = new List<String>();
+            List<String> lstr = new List<String>();
             result.AddRange(getUnpreparedTrainingssets(i_game, lstr, algobot));
             //for the other color
             Console.WriteLine("Created Testdata for first Color");
             i_game = new Game();
             i_game.turn = true;
             result.AddRange(getUnpreparedTrainingssets(i_game, lstr, algobot));
-            return result;
+            Console.WriteLine("Raw testdata created. " + result.Count + " sets");
+
+            return UnpreparedTrainingsset.toTrainingsset(result);
+           
         }
         private List<UnpreparedTrainingsset> getUnpreparedTrainingssets(Game i_game, List<String> lstr, AlgoBot algobot)
         {
@@ -120,7 +118,6 @@ namespace TicTacToe
                             result.Add(l);
                             lstr.Add(Game.BoardToString(l.inputGame, i_game.turn));
                         }
-
                     }
                 }
             }
@@ -141,10 +138,6 @@ namespace TicTacToe
                 i++;
             }
             return new int[] { -1, -1 };
-
-
-
-
         }
 
 
